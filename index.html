@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dokan AI Assistant — Talk to your marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="site-nav.css" />
+<script>
+  tailwind.config = { theme: { extend: {
+    fontFamily: { display:['Poppins','sans-serif'], body:['Lato','sans-serif'] },
+    colors: { dokan:'#7047EB', title:'#0f172a', heading:'#0E0E0F', para:'#334155',
+      reg:'#575757', lite:'#828282', stroke:'#E9E9E9' },
+  }}};
+</script>
+<style>
+  .wrap { width:100%; max-width:1700px; margin:0 auto; padding-left:102px; padding-right:102px; }
+  @media (max-width:1200px){ .wrap { padding-left:48px; padding-right:48px; } }
+  @media (max-width:700px){ .wrap { padding-left:20px; padding-right:20px; } }
+  body { background:#fff; color:#0f172a; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+  html.lenis, html.lenis body { height:auto; }
+  html.lenis-smooth { scroll-behavior:auto !important; }
+  .h2 { margin:0; font-family:'Poppins',sans-serif; font-weight:700; font-size:52px;
+    line-height:1.2; color:#0f172a; }
+  .sub { font-family:'Lato',sans-serif; font-size:20px; line-height:1.5; color:#575757; }
+  .cta-wrap { width:100%; max-width:1700px; margin:0 auto; padding:0 20px; }
+  .cta-band { position:relative; overflow:hidden; border-radius:20px; background:#7047EB; min-height:646px; }
+  .cta-band svg.waves { position:absolute; inset:0; width:100%; height:100%; opacity:.25; pointer-events:none; }
+  .cta-copy { position:absolute; left:84px; top:139px; max-width:655px; z-index:2; }
+  .cta-copy h2 { margin:0; font-family:'Poppins',sans-serif; font-weight:700; font-size:62px; line-height:1.25; color:#fff; }
+  .cta-copy p { margin:28px 0 0; max-width:527px; font-family:'Lato',sans-serif; font-size:20px; line-height:1.5; color:rgba(255,255,255,.8); }
+  .cta-btn { display:inline-flex; align-items:center; gap:14px; margin-top:56px; background:#fff;
+    border-radius:9999px; padding:10px 10px 10px 32px; font-family:'Lato',sans-serif; font-weight:700;
+    font-size:16px; color:#0E0E0F; transition:transform .25s, box-shadow .25s; }
+  .cta-btn:hover { transform:translateY(-2px); box-shadow:0 18px 36px -16px rgba(0,0,0,.35); }
+  .cta-btn .circle { width:45px; height:45px; border-radius:9999px; background:#0E0E0F; color:#fff;
+    display:flex; align-items:center; justify-content:center; }
+  .cta-btn .circle svg { width:17px; height:17px; }
+  .cta-art { position:absolute; right:50px; bottom:0; width:560px; z-index:1; border-radius:10px 10px 0 0; }
+  @media (max-width:1200px) {
+    .cta-copy { position:static; padding:56px 32px 0; }
+    .cta-copy h2 { font-size:clamp(30px,4.6vw,62px); }
+    .cta-band { min-height:0; padding-bottom:40px; }
+    .cta-art { position:static; width:calc(100% - 64px); margin:36px 32px 0; border-radius:10px; }
+  }
+
+
+  /* ─────────── Dokan AI ─────────── */
+  /* Each corner is two layers — a saturated core plus a wide soft halo — so the
+     colour reads deep and luminous instead of flat. Same hues and positions. */
+  .ai-hero { position:relative; overflow:hidden; text-align:center;
+    background:
+      /* blue, lower left */
+      radial-gradient(38% 34% at 4% 90%, rgba(59,130,246,.42) 0%,
+        rgba(96,165,250,.24) 46%, rgba(255,255,255,0) 76%),
+      radial-gradient(60% 52% at 12% 80%, rgba(96,165,250,.30) 0%, rgba(255,255,255,0) 78%),
+      /* amber, right */
+      radial-gradient(38% 34% at 96% 58%, rgba(240,175,10,.44) 0%,
+        rgba(250,204,60,.26) 46%, rgba(255,255,255,0) 78%),
+      radial-gradient(62% 56% at 88% 66%, rgba(234,179,8,.28) 0%, rgba(255,255,255,0) 80%),
+      radial-gradient(50% 30% at 50% 0%, rgba(23,24,26,.05) 0%, rgba(255,255,255,0) 70%),
+      #FBFBFA; }
+  .ai-hero-in { padding-top:202px; max-width:988px; margin:0 auto; }
+  .ai-pill { display:inline-flex; align-items:center; gap:9px; padding:8px 18px; border-radius:9999px;
+    background:#FFFFFF; border:1px solid #E7E7E9; box-shadow:0 1px 2px rgba(23,24,26,.04);
+    font-family:'Lato',sans-serif; font-weight:700; font-size:13px; color:#55595F; }
+  .ai-pill .live { width:7px; height:7px; border-radius:50%; background:#14B8A6;
+    animation:aiPulse 2s infinite; }
+  @keyframes aiPulse { 0%{box-shadow:0 0 0 0 rgba(20,184,166,.6)} 70%{box-shadow:0 0 0 8px transparent}
+    100%{box-shadow:0 0 0 0 transparent} }
+  .ai-hero h1 { margin:28px 0 0; font-family:'Poppins',sans-serif; font-weight:700; font-size:62px;
+    line-height:1.18; color:#17181A; letter-spacing:-.01em; }
+  .ai-hero h1 .grad { color:#A9ABB0; }
+  .ai-hero .lede { margin:28px auto 0; max-width:640px; font-family:'Lato',sans-serif; font-size:20px;
+    line-height:1.5; color:#6B6F76; }
+  .ai-cta { display:flex; justify-content:center; gap:15px; margin-top:56px; }
+  /* Buttons Dokan — Figma spec */
+  .ai-b1 { position:relative; display:flex; flex-direction:row; align-items:center;
+    padding:28px 79px 28px 40px; gap:22px; isolation:isolate;
+    width:210px; height:68px; background:#7047EB; border-radius:187.179px;
+    flex:none; order:0; flex-grow:0;
+    font-family:'Lato',sans-serif; font-style:normal; font-weight:700;
+    font-size:16.8462px; line-height:150%; color:#FFFFFF; white-space:nowrap;
+    transition:background-color .3s, transform .3s, box-shadow .3s; }
+  .ai-b1 .circle { position:absolute; display:flex; flex-direction:row; justify-content:center;
+    align-items:center; padding:6.75926px; gap:13.52px;
+    width:45.86px; height:45.64px; right:11.37px; top:calc(50% - 45.64px/2);
+    background:#FFFFFF; border-radius:135.185px; flex:none; order:0; flex-grow:0; z-index:0;
+    transition:transform .3s cubic-bezier(.22,.61,.36,1); }
+  .ai-b1 .circle svg { width:22.98px; height:22.98px;
+    transition:transform .3s cubic-bezier(.22,.61,.36,1); }
+  .ai-b1:hover { background:#5D36D6; transform:translateY(-2px);
+    box-shadow:0 18px 38px -14px rgba(112,71,235,.55); }
+  .ai-b1:hover .circle { transform:scale(1.08); }
+  .ai-b1:hover .circle svg { transform:translateX(2px); }
+  .ai-b1:active { transform:translateY(0); }
+
+  .ai-b2 { display:inline-flex; align-items:center; justify-content:center; height:68px; padding:0 36px;
+    background:#fff; border:1px solid #E5E5E7; border-radius:187.179px; font-family:'Lato',sans-serif;
+    font-weight:700; font-size:16.8462px; color:#17181A; box-shadow:0 1px 2px rgba(23,24,26,.04);
+    transition:border-color .25s, transform .25s; }
+  .ai-b2:hover { border-color:#BDBDC2; transform:translateY(-2px); }
+  /* requirements, one per box */
+  /* same box as the app window above, so both edges line up with it */
+  .ai-reqs-wrap { width:min(1240px, calc(100vw - 40px)); margin:0 auto; }
+  .ai-reqs-row { display:flex; align-items:center; justify-content:space-between; gap:40px; }
+  .ai-req-label { margin:0; font-family:'Lato',sans-serif; font-weight:700; font-size:12px;
+    letter-spacing:.1em; text-transform:uppercase; color:#9A9DA3; }
+  .ai-reqs { display:flex; gap:14px; margin:0; }
+  .req-box { display:flex; align-items:center; justify-content:center; gap:10px;
+    background:#FFFFFF; border:1px solid #E9E9E9; border-radius:14px; padding:16px 18px;
+    box-shadow:0 1px 2px rgba(23,24,26,.04);
+    transition:border-color .25s, transform .25s, box-shadow .25s; }
+  @media (hover:hover) {
+    .req-box:hover { border-color:#BDBDC2; transform:translateY(-2px);
+      box-shadow:0 10px 24px -14px rgba(23,24,26,.22); }
+  }
+  .req-box svg { width:16px; height:16px; flex:none; }
+  .req-box b { font-family:ui-monospace,Menlo,monospace; font-weight:700; font-size:14px;
+    color:#3A3D42; white-space:nowrap; }
+  .ai-req-note { margin:8px 0 0; font-family:'Lato',sans-serif; font-size:14px; color:#9A9DA3; }
+  /* floating "AI Agent" cursor chip (inspiration's cursor label) */
+  .ai-cursor { position:absolute; right:13%; top:472px; display:flex; flex-direction:column;
+    align-items:flex-start; gap:2px; pointer-events:none; z-index:6;
+    animation:aiFloat 5.2s ease-in-out infinite; }
+  @keyframes aiFloat { 0%,100% { transform:translateY(0) } 50% { transform:translateY(-12px) } }
+  .ai-cursor svg { width:22px; height:22px; margin-left:2px;
+    filter:drop-shadow(0 2px 4px rgba(23,24,26,.25)); }
+  .ai-cursor b { padding:6px 14px; border-radius:9999px; background:#C3CBF9; color:#2A2F55;
+    font-family:'Lato',sans-serif; font-weight:700; font-size:13px;
+    box-shadow:0 6px 16px -6px rgba(42,47,85,.35); }
+
+  /* app-window demo — light card per inspiration */
+  /* The window is clipped and faded at the bottom so its content reads as
+     continuing down into the section — a reveal, not a truncation. The crop
+     lives on a wrapper wider than the card so the drop shadow isn't masked
+     away with it. `translate` stays independent of GSAP's transform. */
+  .ai-term-crop { position:relative; left:50%; translate:-50% 0;
+    width:min(1440px, 100vw); margin:72px 0 0; padding:0 20px;
+    max-height:700px; overflow:hidden;
+    -webkit-mask-image:linear-gradient(to bottom, #000 0, #000 84%, transparent 100%);
+    mask-image:linear-gradient(to bottom, #000 0, #000 84%, transparent 100%); }
+  .ai-term { position:relative; width:100%; max-width:1240px; margin:0 auto; text-align:left;
+    background:#FFFFFF; border:1px solid #ECECEF; border-radius:24px;
+    box-shadow:0 40px 100px -30px rgba(23,24,26,.16); }
+  .ai-term-bar { display:flex; align-items:center; gap:8px; padding:16px 24px;
+    border-bottom:1px solid #F0F0F2; }
+  .ai-term-bar .dot { width:11px; height:11px; border-radius:50%; }
+  .ai-term-bar .who { margin-left:10px; font-family:ui-monospace,Menlo,monospace; font-size:13px;
+    color:#8A8F98; }
+  .ai-term-bar .conn { display:inline-flex; align-items:center; gap:7px; margin-left:14px;
+    padding:4px 11px; border-radius:9999px; background:rgba(20,184,166,.08);
+    border:1px solid rgba(20,184,166,.22); font-family:ui-monospace,Menlo,monospace;
+    font-size:11px; color:#0E9C8B; }
+  .ai-term-bar .conn i { width:6px; height:6px; border-radius:50%; background:#14B8A6;
+    animation:aiPulse 2s infinite; }
+  .ai-term-bar .role { margin-left:auto; padding:5px 12px; border-radius:7px; background:#17181A;
+    color:#fff; font-family:ui-monospace,Menlo,monospace; font-weight:700; font-size:11px;
+    letter-spacing:.07em; }
+  .ai-term-body { padding:30px 30px 28px; }
+  .ai-q { display:flex; gap:12px; align-items:flex-start; }
+  .ai-q .caret { flex:none; font-family:ui-monospace,Menlo,monospace; font-weight:700; color:#7047EB; }
+  .ai-q-text { font-family:'Poppins',sans-serif; font-weight:600; font-size:21px; line-height:1.35;
+    color:#17181A; min-height:1.35em; }
+  .ai-cur { display:inline-block; width:9px; height:1.05em; background:#7047EB; vertical-align:-3px;
+    margin-left:3px; animation:aiBlink 1s steps(1) infinite; }
+  @keyframes aiBlink { 50% { opacity:0 } }
+
+  .ai-answer { opacity:0; transform:translateY(10px); transition:opacity .55s ease, transform .55s ease; }
+  .ai-answer.show { opacity:1; transform:none; }
+  .ai-meta { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:20px 0 18px;
+    font-family:ui-monospace,Menlo,monospace; font-size:11.5px; color:#9A9DA3; }
+  .ai-meta .tool { padding:4px 10px; border-radius:6px; background:#F5F5F7;
+    border:1px solid #ECECEF; color:#55595F; }
+  .ai-meta .sep { opacity:.55; }
+
+  .ai-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .ai-stat { position:relative; min-width:0; padding:16px 17px 15px; border-radius:14px;
+    background:#FAFAFB; border:1px solid #EFEFF2; overflow:hidden; }
+  .ai-stat .l { font-family:'Lato',sans-serif; font-size:12px; color:#8A8F98; letter-spacing:.01em; }
+  .ai-stat .n { margin-top:9px; font-family:'Poppins',sans-serif; font-weight:700; font-size:27px;
+    line-height:1; color:#17181A; font-variant-numeric:tabular-nums; }
+  .ai-stat.hl .n { color:#0E9C8B; }
+  .ai-stat .d { display:inline-flex; align-items:center; gap:4px; margin-top:9px;
+    font-family:ui-monospace,Menlo,monospace; font-size:11.5px; }
+  .ai-stat .d.up { color:#0E9C8B; }
+  .ai-stat .d.down { color:#E64B5F; }
+  .ai-stat .d.warn { color:#B78912; }
+  .ai-stat .d svg { width:11px; height:11px; }
+  .ai-spark { display:flex; align-items:flex-end; gap:3px; height:44px; margin-top:12px; }
+  .ai-spark i { flex:1; border-radius:2px 2px 0 0; background:rgba(112,71,235,.28); height:0;
+    transition:height .7s cubic-bezier(.22,.61,.36,1); }
+  .ai-spark i:last-child { background:#7047EB; }
+  .ai-answer.show .ai-spark i { height:var(--h); }
+
+  .ai-pills { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .ai-spill { display:inline-flex; align-items:center; gap:8px; padding:7px 14px; border-radius:9999px;
+    background:#F7F7F8; border:1px solid #ECECEF;
+    font-family:'Lato',sans-serif; font-size:13px; color:#55595F; }
+  .ai-spill i { width:7px; height:7px; border-radius:50%; }
+  .ai-spill b { font-family:ui-monospace,Menlo,monospace; font-weight:700; color:#17181A; }
+
+  .ai-tbl { margin-top:14px; border-radius:14px; overflow:hidden;
+    background:#FFFFFF; border:1px solid #EFEFF2; }
+  .ai-tbl-h, .ai-tr { display:grid; grid-template-columns:1.6fr .7fr .9fr 1fr; align-items:center;
+    gap:14px; padding:11px 18px; }
+  .ai-tbl-h { font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.08em;
+    text-transform:uppercase; color:#9A9DA3; border-bottom:1px solid #F0F0F2; background:#FAFAFB; }
+  .ai-tr { border-bottom:1px solid #F4F4F6; opacity:0; transform:translateY(6px);
+    transition:opacity .45s ease, transform .45s ease, background-color .25s; }
+  .ai-answer.show .ai-tr { opacity:1; transform:none; }
+  .ai-tr:last-child { border-bottom:none; }
+  .ai-tr:hover { background:#FAFAFB; }
+  .ai-shop { display:flex; align-items:center; gap:11px; min-width:0; }
+  .ai-av { flex:none; width:28px; height:28px; border-radius:9px; display:grid; place-items:center;
+    font-family:'Poppins',sans-serif; font-weight:700; font-size:11px; color:#fff; }
+  .ai-shop span { font-family:'Lato',sans-serif; font-size:14px; color:#303338; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap; }
+  .ai-num { font-family:ui-monospace,Menlo,monospace; font-size:13.5px; color:#17181A;
+    font-variant-numeric:tabular-nums; }
+  .ai-num.soft { color:#8A8F98; }
+  .ai-bar { height:5px; border-radius:99px; background:#EFEFF2; overflow:hidden; }
+  .ai-bar i { display:block; height:100%; width:0; border-radius:99px;
+    background:linear-gradient(90deg,#7047EB,#3FD8C0);
+    transition:width .8s cubic-bezier(.22,.61,.36,1); }
+  .ai-answer.show .ai-bar i { width:var(--w); }
+  .ai-more { padding:11px 18px; font-family:'Lato',sans-serif; font-size:13px; color:#9A9DA3;
+    border-top:1px solid #F4F4F6; }
+  .ai-more b { color:#7047EB; font-weight:700; }
+
+  .ai-scope { display:flex; align-items:center; gap:11px; margin-top:14px; padding:13px 16px;
+    border-radius:12px; background:rgba(20,184,166,.06); border:1px solid rgba(20,184,166,.18);
+    font-family:'Lato',sans-serif; font-size:13.5px; line-height:1.45; color:#4A6B63; }
+  .ai-scope svg { flex:none; }
+
+  /* section furniture */
+  .ai-eyebrow { font-family:ui-monospace,Menlo,monospace; font-weight:700; font-size:13px;
+    letter-spacing:.06em; text-transform:uppercase; color:#14B8A6; }
+  /* section head: heading left, lede flush right, baselines bottom-aligned */
+  .ai-head { display:flex; align-items:flex-end; justify-content:space-between; gap:60px; }
+  .ai-head .hd { max-width:1030px; min-width:0; }
+  .ai-head h2 { margin:16px 0 0; }
+  .ai-head .sub { flex:none; width:330px; margin:0; }
+
+  /* THE SPLIT */
+  .sp-head { display:grid; grid-template-columns:1fr 1fr; gap:28px;
+    max-width:1300px; margin:56px auto 0; }
+  .sp-tab { position:relative; border-radius:20px 20px 0 0; padding:34px 40px 30px; overflow:hidden; }
+  .sp-tab.owner { background:linear-gradient(180deg,rgba(112,71,235,.12),rgba(112,71,235,0));
+    border:1px solid rgba(112,71,235,.28); border-bottom:none; }
+  .sp-tab.vendor { background:linear-gradient(180deg,rgba(20,184,166,.12),rgba(20,184,166,0));
+    border:1px solid rgba(20,184,166,.28); border-bottom:none; }
+  .sp-badge { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:8px;
+    font-family:ui-monospace,Menlo,monospace; font-weight:700; font-size:12px; letter-spacing:.04em;
+    color:#fff; }
+  .sp-tab.owner .sp-badge { background:#7047EB; }
+  .sp-tab.vendor .sp-badge { background:#14B8A6; }
+  .sp-tab h3 { margin:18px 0 0; font-family:'Poppins',sans-serif; font-weight:700; font-size:26px;
+    line-height:1.3; color:#0f172a; }
+  .sp-tab p { margin:8px 0 0; font-family:'Lato',sans-serif; font-size:16px; line-height:1.55;
+    color:#575757; }
+  .sp-tab .crown { position:absolute; top:28px; right:32px; font-size:30px; }
+  .sp-body { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start;
+    max-width:1300px; margin:0 auto; }
+  .sp-col { border-radius:0 0 20px 20px; background:#F8F8FA; padding:6px 0 8px;
+    transition:box-shadow .35s; }
+  .sp-col.owner { border:1px solid rgba(112,71,235,.28); border-top:none; }
+  .sp-col.vendor { border:1px solid rgba(20,184,166,.28); border-top:none; }
+  @media (hover:hover) {
+    .sp-col.owner:hover { box-shadow:0 26px 52px -30px rgba(112,71,235,.4); }
+    .sp-col.vendor:hover { box-shadow:0 26px 52px -30px rgba(20,184,166,.4); }
+  }
+  .cap { display:flex; gap:15px; align-items:flex-start; padding:19px 40px;
+    border-bottom:1px solid #EAEAEF; transition:background-color .25s; }
+  .cap:last-child { border-bottom:none; }
+  .cap:hover { background:#F2F2F4; }
+  .cap .ico { flex:none; width:26px; height:26px; margin-top:2px; border-radius:8px; display:grid;
+    place-items:center; font-size:13px; font-weight:700; }
+  .cap.yes .ico { background:rgba(20,184,166,.14); color:#0E9C8B; }
+  .cap.no  .ico { background:rgba(230,75,95,.12); color:#E64B5F; }
+  .cap.star .ico { background:rgba(112,71,235,.13); color:#7047EB; }
+  .cap .cap-t { font-family:'Poppins',sans-serif; font-weight:600; font-size:16px; line-height:1.4;
+    color:#0f172a; }
+  .cap .cap-d { margin-top:3px; font-family:'Lato',sans-serif; font-size:14px; line-height:1.5;
+    color:#575757; }
+  .cap.no .cap-t { color:#828282; }
+  .sp-foot { margin-top:28px; text-align:center; font-family:'Lato',sans-serif; font-size:17px;
+    color:#575757; }
+  .sp-foot b { font-weight:700; color:#0f172a; }
+
+  /* three reasons */
+  .ai-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:56px; }
+  /* outline icon at the top, copy anchored to the bottom, three colour variants */
+  .ai-card { position:relative; overflow:hidden; display:flex; flex-direction:column; min-width:0;
+    border-radius:20px; padding:50px; min-height:520px;
+    transition:transform .4s cubic-bezier(.22,.61,.36,1), box-shadow .4s; }
+  /* light sweeps in from the icon corner on hover */
+  .ai-card::after { content:''; position:absolute; inset:0; pointer-events:none; opacity:0;
+    background:radial-gradient(62% 52% at 16% 16%, rgba(255,255,255,.16), transparent 70%);
+    transition:opacity .45s ease; }
+  .ai-card--lite::after { background:radial-gradient(62% 52% at 16% 16%,
+    rgba(112,71,235,.12), transparent 70%); }
+  .ai-card > * { position:relative; z-index:1; }
+  @media (hover:hover) {
+    .ai-card { will-change:transform; }
+    .ai-card:hover { transform:translateY(-10px); }
+    .ai-card:hover::after { opacity:1; }
+    .ai-card:hover .ic { transform:translateY(-4px) scale(1.1); }
+    .ai-card--dark:hover  { box-shadow:0 34px 62px -28px rgba(19,26,46,.60); }
+    .ai-card--brand:hover { box-shadow:0 34px 62px -28px rgba(112,71,235,.62); }
+    .ai-card--lite:hover  { box-shadow:0 34px 62px -28px rgba(20,20,40,.28); }
+  }
+  .ai-card .ic { width:56px; height:56px;
+    transition:transform .4s cubic-bezier(.22,.61,.36,1); }
+  .ai-card .ic svg { width:100%; height:100%; display:block; }
+  .ai-card h3 { margin:auto 0 0; font-family:'Poppins',sans-serif; font-weight:700; font-size:26px;
+    line-height:1.3; }
+  .ai-card p { margin:14px 0 0; font-family:'Lato',sans-serif; font-size:16px; line-height:1.65; }
+
+  .ai-card--dark  { background:#131A2E; }
+  .ai-card--dark  .ic { color:#7047EB; }
+  .ai-card--dark  h3 { color:#FFFFFF; }
+  .ai-card--dark  p  { color:rgba(255,255,255,.62); }
+  .ai-card--brand { background:#7047EB; }
+  .ai-card--brand .ic { color:#FFFFFF; }
+  .ai-card--brand h3 { color:#FFFFFF; }
+  .ai-card--brand p  { color:rgba(255,255,255,.78); }
+  .ai-card--lite  { background:#F2F2F4; }
+  .ai-card--lite  .ic { color:#17181A; }
+  .ai-card--lite  h3 { color:#0f172a; }
+  .ai-card--lite  p  { color:#575757; }
+
+  /* 3 per row, two rows, centred */
+  .ai-chips { display:grid; grid-template-columns:repeat(3, max-content); justify-content:center;
+    gap:12px; margin-top:56px; }
+  .ai-chip { display:inline-flex; align-items:center; justify-content:center;
+    background:#F8F8F6; border:1px solid #EDEDEA; border-radius:9999px; padding:11px 20px;
+    font-family:'Lato',sans-serif; font-size:15px; color:#334155;
+    transition:background-color .25s, border-color .25s, color .25s, transform .25s; }
+  .ai-chip:hover { background:#FFFFFF; border-color:#7047EB; color:#7047EB;
+    transform:translateY(-2px); }
+  .ai-chip .q { margin-right:9px; font-family:ui-monospace,Menlo,monospace; color:#14B8A6; }
+
+  /* these sections' heads are centred (the steps section stays left-aligned) */
+  #how .ai-head, #split .ai-head { flex-direction:column; align-items:center;
+    text-align:center; gap:0; }
+  #how .ai-head .hd, #split .ai-head .hd { max-width:none; }
+  #split .ai-head .sub { width:auto; max-width:640px; margin-top:22px; }
+
+  /* steps */
+  .ai-band { background:#F2F2F4; border-radius:20px; padding:130px 85px; }
+  /* "Live in an afternoon" — sticky left rail (eyebrow + heading + lede),
+     smaller right-aligned cards */
+  .st-grid { display:grid; grid-template-columns:1fr 780px; gap:70px; align-items:start; }
+  .st-rail { position:sticky; top:120px; max-width:620px; }
+  .st-rail .h2 { margin-top:24px; }
+  .st-lede { margin-top:22px; max-width:none; }
+  .st-main { justify-self:end; width:100%; max-width:780px; }
+  .st-cards { display:flex; flex-direction:column; gap:26px; }
+  .st-card { position:sticky; top:calc(130px + var(--i,0) * 20px);
+    display:flex; align-items:stretch; justify-content:space-between;
+    gap:36px; background-color:#FFFFFF; opacity:1; border-radius:24px; padding:50px;
+    min-height:360px; transform-origin:center top; will-change:transform;
+    /* isolate so a covered card can never bleed through the one on top */
+    isolation:isolate;
+    border:1px solid #EAEAEF;
+    /* the upward shadow is what separates a card from the one it slides over */
+    box-shadow:0 -8px 24px -10px rgba(23,24,26,.07),
+               0 18px 40px -22px rgba(23,24,26,.10);
+    transition:transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s,
+               border-color .35s; }
+  @media (hover:hover) {
+    .st-card:hover { border-color:#DEDEE6;
+      box-shadow:0 -8px 24px -10px rgba(23,24,26,.08),
+                 0 30px 60px -28px rgba(23,24,26,.14); }
+  }
+  .st-txt { display:flex; flex-direction:column; min-width:0; align-self:stretch; }
+  .st-txt .n { font-family:ui-monospace,Menlo,monospace; font-weight:700; font-size:13px;
+    letter-spacing:.06em; color:#7047EB; }
+  .st-txt h3 { margin:20px 0 0; font-family:'Poppins',sans-serif; font-weight:700; font-size:28px;
+    line-height:1.25; color:#17181A; }
+  .st-txt p { margin:14px 0 0; max-width:360px; font-family:'Lato',sans-serif; font-size:17px;
+    line-height:1.6; color:#575757; }
+  .st-txt .who { margin-top:auto; padding-top:32px; font-family:'Poppins',sans-serif;
+    font-weight:600; font-size:15px; color:#17181A; }
+  .st-ico { position:absolute; right:30px; bottom:30px; width:150px; height:150px;
+    border-radius:18px; display:grid; place-items:center; background:var(--tint,#F2F2F4);
+    transition:transform .35s cubic-bezier(.22,.61,.36,1); }
+  .st-card:hover .st-ico { transform:scale(1.04) rotate(-2deg); }
+  .st-ico svg { width:56px; height:56px; margin:0; }
+  .st-br { display:inline; }
+    .ai-clients { display:flex; flex-wrap:wrap; gap:12px; margin-top:44px; }
+
+  .ai-client { display:inline-flex; align-items:center; gap:10px; background:#fff;
+    border:1px solid #E9E9E9; border-radius:9999px; padding:12px 24px;
+    font-family:'Lato',sans-serif; font-size:16px; color:#334155; }
+  .ai-client .d2 { width:7px; height:7px; border-radius:50%; background:#14B8A6; }
+
+  @media (max-width:1200px) {
+    .ai-hero-in { padding:170px 8px 0; }
+    .ai-hero h1 { font-size:clamp(30px,4.8vw,62px); }
+    .ai-term-crop { margin-top:48px; max-height:520px;
+      -webkit-mask-image:linear-gradient(to bottom, #000 0, #000 80%, transparent 100%);
+      mask-image:linear-gradient(to bottom, #000 0, #000 80%, transparent 100%); }
+    .ai-reqs-row { flex-direction:column; align-items:flex-start; gap:20px; }
+    .ai-reqs { flex-direction:column; width:100%; }
+    .ai-cursor { display:none; }
+    .ai-term-body { padding:24px 22px 26px; }
+    .ai-q-text { font-size:18px; }
+    .ai-stats { grid-template-columns:repeat(2,1fr); }
+    .ai-tbl-h, .ai-tr { grid-template-columns:1.5fr .6fr .8fr; }
+    .ai-tbl-h > :last-child, .ai-tr > :last-child { display:none; }
+    .ai-term-bar .conn { display:none; }
+    .ai-head { flex-direction:column; align-items:flex-start; gap:18px; }
+    .ai-head .sub { width:auto; max-width:none; }
+    .sp-head, .sp-body { grid-template-columns:1fr; gap:0; }
+    .sp-head .sp-tab.vendor { margin-top:36px; }
+    .sp-tab { padding:28px 24px 24px; }
+    .cap { padding:16px 24px; }
+    .ai-chips { grid-template-columns:repeat(2, max-content); }
+    .ai-cards { grid-template-columns:1fr; }
+    .ai-card { padding:36px 32px; min-height:340px; }
+    .ai-card h3 { font-size:23px; }
+    .ai-band { padding:56px 28px; }
+    .st-grid { grid-template-columns:1fr; gap:36px; }
+    .st-br { display:none; }
+    .st-rail { position:static; max-width:none; }
+    .st-main { justify-self:stretch; max-width:none; }
+    .st-card { position:static; flex-direction:column; padding:32px; min-height:0; gap:28px; }
+    .st-ico { position:static; width:100%; height:200px; }
+    .st-ico svg { width:64px; height:64px; margin:0; }
+    .st-txt h3 { font-size:24px; }
+    .st-txt .who { padding-top:24px; }
+  }
+  @media (max-width:700px) {
+    .ai-chips { grid-template-columns:1fr; }
+    .ai-cta { flex-direction:column; align-items:stretch; }
+    .ai-stats { grid-template-columns:1fr; }
+    .ai-tbl-h, .ai-tr { grid-template-columns:1.4fr .5fr .8fr; padding-left:14px; padding-right:14px; }
+    .ai-term-body { padding:22px 16px 20px; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body class="font-body">
+<header class="ai-hero">
+  <div id="site-nav" data-variant="light"></div>
+  <div class="wrap">
+    <div class="ai-hero-in">
+      <span class="ai-pill" data-anim><span class="live"></span> New in Dokan <span class="mono">5.0</span> &#183; AI Assistant</span>
+      <h1 data-anim>Run your marketplace<br />by <span class="grad">asking</span> it.</h1>
+      <p class="lede" data-anim>Connect Claude, Cursor, or VS Code to your Dokan store and ask in plain language. No dashboards to dig through, no reports to build. Every vendor&rsquo;s assistant sees only their own data, automatically.</p>
+      <div class="ai-cta" data-anim>
+        <a href="#start" class="ai-b1">Turn it on
+          <span class="circle"><svg viewBox="0 0 24 24" fill="none" stroke="#7047EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </a>
+        <a href="#how" class="ai-b2">See how it connects</a>
+      </div>
+      <div class="ai-cursor" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path fill="#17181A" d="M5 3l14 8.2-6.2 1.4L10.6 19z"/></svg>
+        <b>AI Agent</b>
+      </div>
+
+      <div class="ai-term-crop">
+      <div class="ai-term" id="aiDemo" data-anim>
+        <div class="ai-term-bar">
+          <span class="dot" style="background:#ff5f57"></span>
+          <span class="dot" style="background:#febc2e"></span>
+          <span class="dot" style="background:#28c840"></span>
+          <span class="who">marketplace-owner</span>
+          <span class="conn"><i></i> dokan-mcp connected</span>
+          <span class="role">OWNER</span>
+        </div>
+        <div class="ai-term-body">
+          <div class="ai-q">
+            <span class="caret">&#8250;_</span>
+            <span class="ai-q-text" id="aiTyped"></span><span class="ai-cur" id="aiCursor"></span>
+          </div>
+
+          <div class="ai-answer" id="aiAnswer">
+            <div class="ai-meta">
+              <span class="tool">list_orders</span>
+              <span class="tool">get_sales_report</span>
+              <span class="tool">list_stores</span>
+              <span class="sep">&#183;</span> 42 stores scanned
+              <span class="sep">&#183;</span> answered in 1.4s
+            </div>
+
+            <div class="ai-stats">
+              <div class="ai-stat hl">
+                <div class="l">Orders today</div>
+                <div class="n" data-count="284">284</div>
+                <div class="ai-spark"><i style="--h:30%"></i><i style="--h:38%"></i><i style="--h:34%"></i><i style="--h:47%"></i><i style="--h:43%"></i><i style="--h:55%"></i><i style="--h:62%"></i><i style="--h:58%"></i><i style="--h:74%"></i><i style="--h:70%"></i><i style="--h:84%"></i><i style="--h:100%"></i></div>
+              </div>
+              <div class="ai-stat">
+                <div class="l">Gross sales</div>
+                <div class="n" data-count="18420" data-prefix="$">$18,420</div>
+                <div class="d up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 15l7-7 7 7"/></svg> 8.1% vs yesterday</div>
+              </div>
+              <div class="ai-stat">
+                <div class="l">Avg order value</div>
+                <div class="n" data-count="64.86" data-prefix="$" data-dec="2">$64.86</div>
+                <div class="d down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg> 2.3% vs yesterday</div>
+              </div>
+              <div class="ai-stat">
+                <div class="l">Needs your action</div>
+                <div class="n" data-count="53">53</div>
+                <div class="d warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 8v5M12 16.5v.01"/><circle cx="12" cy="12" r="9"/></svg> 11 on hold &#183; 19 out of stock</div>
+              </div>
+            </div>
+
+            <div class="ai-pills">
+              <span class="ai-spill"><i style="background:#3FD8C0"></i>Completed <b>218</b></span>
+              <span class="ai-spill"><i style="background:#7047EB"></i>Processing <b>42</b></span>
+              <span class="ai-spill"><i style="background:#EFBB40"></i>On hold <b>11</b></span>
+              <span class="ai-spill"><i style="background:#FF8FA3"></i>Refunded <b>13</b></span>
+            </div>
+
+            <div class="ai-tbl">
+              <div class="ai-tbl-h">
+                <div>Top stores today</div><div>Orders</div><div>Sales</div><div>Share</div>
+              </div>
+              <div class="ai-tr" style="transition-delay:260ms">
+                <div class="ai-shop"><span class="ai-av" style="background:#7047EB">NH</span><span>Nordic Home</span></div>
+                <div class="ai-num">68</div>
+                <div class="ai-num soft">$4,910</div>
+                <div class="ai-bar"><i style="--w:74%;transition-delay:300ms"></i></div>
+              </div>
+              <div class="ai-tr" style="transition-delay:330ms">
+                <div class="ai-shop"><span class="ai-av" style="background:#3FD8C0">VO</span><span>Verde Organics</span></div>
+                <div class="ai-num">51</div>
+                <div class="ai-num soft">$3,240</div>
+                <div class="ai-bar"><i style="--w:58%;transition-delay:370ms"></i></div>
+              </div>
+              <div class="ai-tr" style="transition-delay:400ms">
+                <div class="ai-shop"><span class="ai-av" style="background:#EFBB40">AO</span><span>Atlas Outdoors</span></div>
+                <div class="ai-num">44</div>
+                <div class="ai-num soft">$2,880</div>
+                <div class="ai-bar"><i style="--w:49%;transition-delay:440ms"></i></div>
+              </div>
+              <div class="ai-tr" style="transition-delay:470ms">
+                <div class="ai-shop"><span class="ai-av" style="background:#FF8FA3">LA</span><span>Lumen Audio</span></div>
+                <div class="ai-num">37</div>
+                <div class="ai-num soft">$2,615</div>
+                <div class="ai-bar"><i style="--w:42%;transition-delay:510ms"></i></div>
+              </div>
+              <div class="ai-more">&#43; <b>33 more stores</b> with orders today &#183; ask to see any one of them</div>
+            </div>
+
+            <div class="ai-scope">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Reading covers the whole marketplace. Vendors asking the same question see only their own store.
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- REQUIREMENTS -->
+<section class="bg-white pt-[80px]">
+  <div class="ai-reqs-wrap">
+    <div class="ai-reqs-row" data-anim>
+      <div>
+        <p class="ai-req-label">Requires</p>
+        <p class="ai-req-note">on an HTTPS site.</p>
+      </div>
+      <div class="ai-reqs" data-stagger>
+        <div class="req-box"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="#CBD5E1" stroke-width="1.6"/><path d="M8 12.3l2.7 2.7L16 9.6" stroke="#0E9C8B" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Dokan 5.0.x+</b></div>
+        <div class="req-box"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="#CBD5E1" stroke-width="1.6"/><path d="M8 12.3l2.7 2.7L16 9.6" stroke="#0E9C8B" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><b>WooCommerce 10.9+</b></div>
+        <div class="req-box"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="#CBD5E1" stroke-width="1.6"/><path d="M8 12.3l2.7 2.7L16 9.6" stroke="#0E9C8B" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><b>WordPress 6.9+</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE SPLIT -->
+<section class="bg-white pt-[150px]" id="split">
+  <div class="wrap">
+    <div class="ai-head" data-anim>
+      <div class="hd">
+        <div class="ai-eyebrow">// access for everyone</div>
+        <h2 class="h2">MCP Access for<br class="st-br" /> Admins and Vendors</h2>
+      </div>
+      <p class="sub">The same assistant behaves differently depending on who&rsquo;s asking. Here&rsquo;s exactly what each side can do.</p>
+    </div>
+
+    <div class="sp-head">
+      <div class="sp-tab owner" data-anim>
+        <span class="crown">&#128081;</span>
+        <span class="sp-badge">YOU &#183; THE OWNER</span>
+        <h3>The whole marketplace</h3>
+        <p>Full reach across every store, vendor, order, and number you host.</p>
+      </div>
+      <div class="sp-tab vendor" data-anim>
+        <span class="sp-badge">EACH VENDOR</span>
+        <h3>Their own shop</h3>
+        <p>Everything about their store, and nothing about anyone else&rsquo;s.</p>
+      </div>
+    </div>
+
+    <div class="sp-body">
+      <div class="sp-col owner">
+          <div class="cap star"><span class="ico">&#9733;</span><div><div class="cap-t">See every vendor&rsquo;s orders</div><div class="cap-d">All stores at once, each tagged with its shop</div></div></div>
+          <div class="cap star"><span class="ico">&#9733;</span><div><div class="cap-t">Browse the full store directory</div><div class="cap-d">Approved, pending, and awaiting approval</div></div></div>
+          <div class="cap star"><span class="ico">&#9733;</span><div><div class="cap-t">Gross sales, vendor by vendor</div><div class="cap-d">Totalled across the marketplace by date</div></div></div>
+          <div class="cap star"><span class="ico">&#9733;</span><div><div class="cap-t">Search any vendor&rsquo;s products</div><div class="cap-d">Marketplace-wide, drafts and pending included</div></div></div>
+          <div class="cap star"><span class="ico">&#9733;</span><div><div class="cap-t">Update any order</div><div class="cap-d">Change status or drop an internal note</div></div></div>
+          <div class="cap yes"><span class="ico">&#10003;</span><div><div class="cap-t">Read everything, everywhere</div><div class="cap-d">The bird&rsquo;s-eye view of your platform</div></div></div>
+      </div>
+      <div class="sp-col vendor">
+          <div class="cap yes"><span class="ico">&#10003;</span><div><div class="cap-t">See their own orders</div><div class="cap-d">Filtered to their store, by status or date</div></div></div>
+          <div class="cap yes"><span class="ico">&#10003;</span><div><div class="cap-t">Check their balance and payouts</div><div class="cap-d">Available balance and withdrawal history</div></div></div>
+          <div class="cap yes"><span class="ico">&#10003;</span><div><div class="cap-t">Manage their own products</div><div class="cap-d">Create, price, publish, mark out of stock</div></div></div>
+          <div class="cap yes"><span class="ico">&#10003;</span><div><div class="cap-t">Browse the public directory</div><div class="cap-d">Same storefront info any shopper sees</div></div></div>
+          <div class="cap no"><span class="ico">&#10005;</span><div><div class="cap-t">Another vendor&rsquo;s orders or money</div><div class="cap-d">Never reachable, even by exact ID</div></div></div>
+          <div class="cap no"><span class="ico">&#10005;</span><div><div class="cap-t">Editing a shop that isn&rsquo;t theirs</div><div class="cap-d">Blocked, same as their vendor dashboard</div></div></div>
+      </div>
+    </div>
+
+    <p class="sp-foot" data-anim>The difference is just <b>which key they connect with</b>. You hand each person theirs, and the assistant does the rest.</p>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="bg-white pt-[216px]" id="how">
+  <div class="wrap">
+    <div class="ai-head" data-anim>
+      <div class="hd">
+        <div class="ai-eyebrow">// no dashboards harmed</div>
+        <h2 class="h2">Three reasons it feels like magic</h2>
+      </div>
+    </div>
+    <div class="ai-cards" data-stagger>
+      <article class="ai-card ai-card--dark">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4L7 21.5l1.3-3.6A8.4 8.4 0 1121 11.5z"/></svg></div>
+        <h3>Say it like a human</h3>
+        <p>&ldquo;Show today&rsquo;s orders across all stores.&rdquo; That&rsquo;s a real thing you can type. No filters, no reports, no query language.</p>
+      </article>
+      <article class="ai-card ai-card--brand">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 2.5L5 13.5h5.5l-1 8L18 10.5h-5.5z"/></svg></div>
+        <h3>Answered in seconds</h3>
+        <p>Straight from your live marketplace. Nothing to export, nothing to wait on. Ask, read, move on.</p>
+      </article>
+      <article class="ai-card ai-card--lite">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 11.5a3.1 3.1 0 100-6.2 3.1 3.1 0 000 6.2zM15.5 11.5a3.1 3.1 0 100-6.2 3.1 3.1 0 000 6.2z"/><path d="M2.8 19.5c0-3 2.6-4.8 5.7-4.8s5.7 1.8 5.7 4.8M15 14.9c2.8.2 5.2 2 5.2 4.6"/></svg></div>
+        <h3>Lighter inbox for you</h3>
+        <p>Hand vendors their own key and they stop asking you &ldquo;what&rsquo;s my balance?&rdquo; They just ask the assistant.</p>
+      </article>
+    </div>
+    <div class="ai-chips" data-stagger>
+      <span class="ai-chip"><span class="q">&#8250;</span>List all vendors awaiting approval</span>
+      <span class="ai-chip"><span class="q">&#8250;</span>Show every on-hold order today</span>
+      <span class="ai-chip"><span class="q">&#8250;</span>How many products are on the marketplace?</span>
+      <span class="ai-chip"><span class="q">&#8250;</span>Find products with SKU containing WIN</span>
+      <span class="ai-chip"><span class="q">&#8250;</span>Mark order 1042 as refunded</span>
+      <span class="ai-chip"><span class="q">&#8250;</span>Gross sales per vendor last month</span>
+    </div>
+  </div>
+</section>
+
+<!-- SETUP -->
+<section class="bg-white pt-[216px]" id="start">
+  <div class="cta-wrap">
+    <div class="ai-band" data-anim>
+      <div class="st-grid">
+        <aside class="st-rail">
+          <div class="ai-eyebrow">// live in an afternoon</div>
+          <h2 class="h2">4 Simple Steps<br class="st-br" /> to Get Started</h2>
+          <p class="sub st-lede">You switch it on once for the whole marketplace,<br class="st-br" /> then hand each vendor their own way in.</p>
+        </aside>
+        <div class="st-main">
+          <div class="st-cards">
+          <article class="st-card" style="--i:0">
+            <div class="st-txt">
+              <div class="n">STEP 1</div>
+              <h3>Switch it on</h3>
+              <p>Turn the feature on for your whole marketplace, one time.</p>
+            </div>
+            <div class="st-ico" style="--tint:#F1EDFF">
+              <svg viewBox="0 0 48 48" fill="none" stroke="#7047EB" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="color:#7047EB"><rect x="6" y="16" width="36" height="16" rx="8"/><circle cx="34" cy="24" r="6" fill="currentColor" stroke="none"/></svg>
+            </div>
+          </article>
+          <article class="st-card" style="--i:1">
+            <div class="st-txt">
+              <div class="n">STEP 2</div>
+              <h3>Hand out keys</h3>
+              <p>You get a master key. Each vendor gets one scoped to their shop.</p>
+            </div>
+            <div class="st-ico" style="--tint:#FFF6E4">
+              <svg viewBox="0 0 48 48" fill="none" stroke="#B78912" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="color:#B78912"><circle cx="16" cy="17" r="7"/><path d="M21 22L40 41M33 34l4-4M28 29l4-4"/></svg>
+            </div>
+          </article>
+          <article class="st-card" style="--i:2">
+            <div class="st-txt">
+              <div class="n">STEP 3</div>
+              <h3>Connect</h3>
+              <p>Paste it into Claude, Cursor, or VS Code. Copy, paste, done.</p>
+            </div>
+            <div class="st-ico" style="--tint:#E6F7F4">
+              <svg viewBox="0 0 48 48" fill="none" stroke="#0E9C8B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="color:#0E9C8B"><path d="M19 29l-4 4a7 7 0 01-10-10l6-6a7 7 0 0110 0" transform="translate(6 4)"/><path d="M23 19l4-4a7 7 0 0110 10l-6 6a7 7 0 01-10 0" transform="translate(-4 -6)"/></svg>
+            </div>
+          </article>
+          <article class="st-card" style="--i:3">
+            <div class="st-txt">
+              <div class="n">STEP 4</div>
+              <h3>Start asking</h3>
+              <p>Say &ldquo;who am I on this marketplace?&rdquo; and you&rsquo;re rolling.</p>
+            </div>
+            <div class="st-ico" style="--tint:#FDEBF3">
+              <svg viewBox="0 0 48 48" fill="none" stroke="#E64B5F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="color:#E64B5F"><path d="M42 22a16 14 0 01-16 14l-9 6 2-8a16 14 0 1123-12z"/><path d="M18 22h12M18 28h7"/></svg>
+            </div>
+          </article>
+          </div>
+          <div class="ai-clients" data-stagger>
+          <span class="ai-client"><span class="d2"></span> Claude Desktop</span>
+          <span class="ai-client"><span class="d2"></span> Claude Code</span>
+          <span class="ai-client"><span class="d2"></span> Cursor</span>
+          <span class="ai-client"><span class="d2"></span> VS Code</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="bg-white pt-[20px] pb-[20px]">
+  <div class="cta-wrap">
+    <div class="cta-band" data-anim>
+      <svg class="waves" preserveAspectRatio="none" viewBox="0 0 1000 500" fill="none" stroke="white" stroke-width="1">
+        <path d="M-40 430 C 240 340 620 380 1050 210"/><path d="M-40 500 C 280 410 640 440 1050 300"/>
+        <path d="M-40 360 C 240 280 620 320 1050 140"/><path d="M-40 290 C 240 220 620 260 1050 80"/>
+      </svg>
+      <div class="cta-copy">
+        <h2>Your marketplace is ready to talk back.</h2>
+        <p>Give yourself the master view and give every vendor their own. The easiest way you&rsquo;ve ever run the show is one question away.</p>
+        <a href="index.html" class="cta-btn">Get started free
+          <span class="circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+      <img class="cta-art" src="Media/Themes%20Page/Image%20Container.png" alt="Dokan storefront" loading="lazy" />
+    </div>
+  </div>
+</section>
+
+<footer class="bg-black text-white">
+  <div class="wrap pt-[90px] pb-[40px]">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-14">
+      <!-- col 1 -->
+      <div>
+        <a href="#" class="inline-block mb-9">
+          <img src="Media/Dokan%20Logos/Dokan%20Logo-Dark%20Footer.svg" alt="Dokan"
+               width="139" height="38" class="w-[139px] h-[38px]" />
+        </a>
+        <ul class="space-y-[13px] font-body text-[15px] text-white/70" data-links="About Us|Brand Assets|Changelog|Contact Us|Career"></ul>
+        <h5 class="font-display font-semibold text-[17px] mt-9 mb-5">Use Cases</h5>
+        <ul class="space-y-[13px] font-body text-[15px] text-white/70" data-links="Fashion|Furniture|Print on demand|Electronics|Auction|Booking|View All"></ul>
+        <h5 class="font-display font-semibold text-[17px] mt-9 mb-5">Demo's</h5>
+        <ul class="space-y-[13px] font-body text-[15px] text-white/70" data-links="Dokan WordPress Plugin|Dokan Mobile App|Delivery Driver App|Otel Theme"></ul>
+      </div>
+      <!-- col 2 -->
+      <div>
+        <h5 class="font-display font-semibold text-[17px] mb-5">Resources</h5>
+        <ul class="space-y-[13px] font-body text-[15px] text-white/70" data-links="Blogs|Documentation|FAQs|Video Tutorials|Webinars"></ul>
+        <h5 class="font-display font-semibold text-[17px] mt-9 mb-5">Policies</h5>
+        <ul class="space-y-[13px] font-body text-[15px] text-white/70" data-links="Privacy Policy|Terms of Sevice|Support Policy|Affiliate Policy|Refund Policy"></ul>
+        <h5 class="font-display font-semibold text-[17px] mt-9 mb-5 leading-snug">Support &amp;<br />Success Stories</h5>
+        <ul class="space-y-[13px] font-body text-[15px] text-white/70" data-links="Success Stories|Testimonials|Support"></ul>
+      </div>
+      <!-- col 3 -->
+      <div>
+        <h5 class="font-display font-semibold text-[17px] mb-5">Important Links</h5>
+        <ul class="space-y-[13px] font-body text-[15px] text-white/70" data-links="Modules|Features|Payment Integrations|Compatible Plugins|Compatible Themes|Compare"></ul>
+        <h5 class="font-display font-semibold text-[17px] mt-9 mb-5">Solutions</h5>
+        <ul class="space-y-[13px] font-body text-[15px] text-white/70" data-links="Marketplace (Hosted by you)|eCommerce Shop (Hosted by us)|Marketplace (Hosted by us)|Mobile App|Delivery Driver App|Otel Theme|Dokan Care|wePOS|StoreGrowth|weLab"></ul>
+      </div>
+      <!-- col 4 -->
+      <div>
+        <h5 class="font-display font-semibold text-[17px] mb-5 leading-snug">Partnership<br />&amp; Affiliate</h5>
+        <ul class="space-y-[13px] font-body text-[15px] text-white/70" data-links="Partner with Us|Join Our Affiliate Program|Affiliate Policy|Affiliate|Influencer Program"></ul>
+        <h5 class="font-display font-semibold text-[17px] mt-9 mb-5 leading-snug">Guide to Build a<br />Marketplace Like</h5>
+        <ul class="space-y-[13px] font-body text-[15px] text-white/70" data-links="Etsy|Amazon|eBay|Alibaba|Airbnb|More Examples"></ul>
+      </div>
+    </div>
+
+    <div class="mt-[90px] flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+      <div>
+        <h5 class="font-display font-bold text-[22px] mb-5">Keep Updated</h5>
+        <form class="flex items-center bg-white rounded-full p-1.5 w-full max-w-[278px]" onsubmit="return false">
+          <input type="email" placeholder="Your email address" class="flex-1 min-w-0 bg-transparent font-body text-heading text-[14px] px-4 py-2 outline-none placeholder:text-lite" />
+          <button class="rounded-full bg-dokan hover:bg-[#5d36d6] transition-colors px-4 py-2.5 font-body font-bold text-[13px] text-white whitespace-nowrap">Stay Updated</button>
+        </form>
+      </div>
+      <div class="flex flex-col items-start lg:items-end gap-6">
+        <div class="flex items-center gap-3" id="socials"></div>
+        <div class="flex flex-wrap items-center gap-4 text-white/70 font-body text-[13px]">
+          <span class="rounded bg-[#15151b] px-3 py-1.5 flex items-center gap-2"><span class="font-bold text-[10px] text-dokan">GDPR</span> Compliant</span>
+          <span class="text-white/20">|</span>
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-[#22C55E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+            Secure Payment
+          </span>
+          <span class="text-white/20">|</span>
+          <span class="font-display font-bold italic text-white/90 text-[15px]">stripe</span>
+          <span class="text-white/20">|</span>
+          <span class="font-display font-bold italic text-[15px]"><span class="text-[#4B96D8]">Pay</span><span class="text-[#8ECBEE]">Pal</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-7 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 font-body text-[13px] text-white/60">
+      <span class="flex items-center gap-2">A <span class="font-bold text-white">weDevs</span> Product</span>
+      <span>© 2025, Dokan. All Rights Reserved.</span>
+      <button class="flex items-center gap-1.5 hover:text-white transition-colors">
+        English <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</footer>
+
+<script src="demos.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="site-nav.js?v=1"></script>
+<script>
+(function () {
+  var socials = [
+    ['#1877F2','<path fill="#fff" d="M13.5 21v-7h2.3l.4-2.7h-2.7V9.5c0-.8.2-1.3 1.4-1.3H16V5.8c-.3 0-1.1-.1-2-.1-2 0-3.4 1.2-3.4 3.5v1.9H8.3V14h2.3v7h2.9z"/>'],
+    ['#000000','<path fill="#fff" d="M14.2 10.6L19 5.5h-1.4l-3.7 4-3-4H7l4.5 6-4.5 5h1.4l3.9-4.3 3.1 4.3H19l-4.8-6.6z"/>'],
+    ['#FF0000','<path fill="#fff" d="M18.6 9.2c-.2-.7-.7-1.2-1.4-1.4C15.9 7.5 12 7.5 12 7.5s-3.9 0-5.2.3c-.7.2-1.2.7-1.4 1.4C5.1 10.5 5.1 12 5.1 12s0 1.5.3 2.8c.2.7.7 1.2 1.4 1.4 1.3.3 5.2.3 5.2.3s3.9 0 5.2-.3c.7-.2 1.2-.7 1.4-1.4.3-1.3.3-2.8.3-2.8s0-1.5-.3-2.8zM10.8 14.3V9.7l3.9 2.3-3.9 2.3z"/>'],
+    ['#0A66C2','<path fill="#fff" d="M9 10.5H6.7V18H9v-7.5zM7.8 9.4c.8 0 1.3-.5 1.3-1.2 0-.7-.5-1.2-1.3-1.2S6.6 7.5 6.6 8.2c0 .7.5 1.2 1.2 1.2zM18 18v-4.3c0-2.2-1.2-3.3-2.8-3.3-1.3 0-1.9.7-2.2 1.2v-1h-2.3c0 .6 0 7.4 0 7.4H13v-4.2c0-.2 0-.4.1-.6.2-.4.6-.9 1.3-.9.9 0 1.3.7 1.3 1.7V18H18z"/>'],
+    ['#111111','<path fill="#fff" d="M7.5 8.2c-1.4 0-2.4 1.6-2.4 3.4 0 1.5.7 2.5 1.8 2.5.9 0 1.5-.6 2.4-2.2l.9-1.6c.3.5.6 1 .9 1.5-.4.6-.8 1.2-1.1 1.5-.9 1-1.6 1.4-2.6 1.4-1.9 0-3-1.6-3-3.9 0-2.6 1.5-4.6 3.4-4.6 1.2 0 2 .6 2.9 1.9.6-.9 1.4-1.9 2.8-1.9 1.9 0 3.3 2 3.3 4.6 0 2.3-1.1 3.9-2.9 3.9-.6 0-1.1-.2-1.6-.6.3-.4.5-.7.8-1.1.3.2.5.3.8.3 1 0 1.5-1 1.5-2.5 0-1.8-.9-3.4-2.3-3.4-.8 0-1.4.6-2.2 1.9l-.8 1.4c-1 1.8-1.9 2.9-3.3 2.9z"/>'],
+  ];
+  var FOOTER_ROUTES = {};   /* single-page deploy */
+  document.querySelectorAll('[data-links]').forEach(function (ul) {
+    ul.dataset.links.split('|').forEach(function (t) {
+      var li = document.createElement('li');
+      li.innerHTML = '<a href="' + (FOOTER_ROUTES[t] || '#') + '" class="hover:text-white transition-colors">' + t + '</a>';
+      ul.appendChild(li);
+    });
+  });
+  var sw = document.getElementById('socials');
+  if (sw) socials.forEach(function (x) {
+    var a = document.createElement('a');
+    a.href = '#'; a.className = 'grid place-items-center h-[34px] w-[34px] rounded-full';
+    a.style.background = x[0];
+    a.innerHTML = '<svg viewBox="0 0 24 24" class="w-full h-full">' + x[1] + '</svg>';
+    sw.appendChild(a);
+  });
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var q = "Show today's orders across all stores";
+    var el = document.getElementById('aiTyped');
+    var cursor = document.getElementById('aiCursor');
+    var answer = document.getElementById('aiAnswer');
+    if (!el) return;
+    function countAll() {
+      if (!answer) return;
+      answer.querySelectorAll('[data-count]').forEach(function (n) {
+        var target = parseFloat(n.dataset.count),
+            pre = n.dataset.prefix || '', dec = parseInt(n.dataset.dec || '0', 10),
+            t0 = null, dur = 950;
+        function step(ts) {
+          if (!t0) t0 = ts;
+          var p = Math.min((ts - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+          n.textContent = pre + (target * e).toLocaleString('en-US',
+            { minimumFractionDigits: dec, maximumFractionDigits: dec });
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }
+    if (reduce) { el.textContent = q; if (cursor) cursor.style.display = 'none';
+      if (answer) answer.classList.add('show'); return; }
+    var started = false;
+    function run() {
+      if (started) return; started = true;
+      var i = 0;
+      (function type() {
+        if (i <= q.length) { el.textContent = q.slice(0, i); i++; setTimeout(type, 44 + Math.random() * 40); }
+        else { setTimeout(function () {
+          if (cursor) cursor.style.display = 'none'; answer.classList.add('show'); countAll(); }, 340); }
+      })();
+    }
+    var demo = document.getElementById('aiDemo');
+    if ('IntersectionObserver' in window && demo) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) run(); });
+      }, { threshold: .4 }).observe(demo);
+    }
+    setTimeout(run, 1200);
+  })();
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.gsap || !window.ScrollTrigger || reduced) return;
+  gsap.registerPlugin(ScrollTrigger);
+  if (window.Lenis && !window.matchMedia('(hover:none)').matches) {
+    var lenis = new Lenis({ duration: 1.05, smoothWheel: true });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+    gsap.ticker.lagSmoothing(0);
+  }
+  gsap.from('.site-nav .menu-row > *', { y:-16, opacity:0, duration:.6, stagger:.08, ease:'power3.out' });
+  gsap.utils.toArray('[data-anim]').forEach(function (el) {
+    gsap.from(el, { y:30, opacity:0, duration:.8, ease:'power3.out', immediateRender:false,
+      clearProps:'transform',
+      scrollTrigger:{ trigger:el, start:'top 88%', once:true } });
+  });
+  /* ── "Live in an afternoon": sticky card stack ──
+     Each card pins under the one before it; as the next card rides up to
+     cover it, the covered card eases back in scale only. Opacity is never
+     touched — a translucent card would let the stack behind it show through. */
+  (function () {
+    var cards = gsap.utils.toArray('.st-card');
+    if (cards.length < 2) return;
+    gsap.matchMedia().add('(min-width:1201px)', function () {
+      cards.forEach(function (card, i) {
+        if (i === cards.length - 1) return;
+        gsap.to(card, {
+          scale: 0.94, ease: 'none',
+          scrollTrigger: { trigger: cards[i + 1], start: 'top bottom',
+            end: 'top top+=170', scrub: true }
+        });
+      });
+      return function () { gsap.set(cards, { clearProps: 'transform' }); };
+    });
+  })();
+
+  document.querySelectorAll('[data-stagger]').forEach(function (host) {
+    gsap.from(host.children, { y:34, opacity:0, duration:.7, ease:'power3.out', stagger:.06,
+      immediateRender:false, clearProps:'transform',
+      scrollTrigger:{ trigger:host, start:'top 86%', once:true } });
+  });
+
+  window.addEventListener('load', function () {
+    ScrollTrigger.refresh();
+    setTimeout(function () {
+      document.querySelectorAll('[data-anim], [data-stagger] > *').forEach(function (el) {
+        if (parseFloat(getComputedStyle(el).opacity) < 0.05) {
+          var r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight && r.bottom > 0) gsap.set(el, { clearProps:'opacity,transform' });
+        }
+      });
+    }, 1200);
+  });
+  var rt; window.addEventListener('resize', function () {
+    clearTimeout(rt); rt = setTimeout(function () { ScrollTrigger.refresh(); }, 200);
+  });
+})();
+</script>
+</body>
+</html>
