@@ -300,6 +300,7 @@
   .ai-hero h1 { margin:28px 0 0; font-family:'Poppins',sans-serif; font-weight:700; font-size:62px;
     line-height:1.18; color:#17181A; letter-spacing:-.01em; }
   .ai-hero h1 .grad { color:#A9ABB0; }
+  .ai-hero h1 .hw { white-space:nowrap; }
   .ai-hero .lede { margin:28px auto 0; max-width:640px; font-family:'Lato',sans-serif; font-size:20px;
     line-height:1.5; color:#6B6F76; }
   .ai-cta { display:flex; justify-content:center; gap:15px; margin-top:56px; }
@@ -382,6 +383,7 @@
   .aiw-mark { display:block; width:max-content; font-size:24px; line-height:1;
     color:#EC846A; margin:0 auto 22px 0; transform-origin:left top; will-change:transform; }
   .aiw-composer, .aiw-disc { will-change:transform, opacity; }
+  .ai-tilt { will-change:transform; }
 
   .aiw-panel { background:#0F1523; border-radius:20px; overflow:hidden; }
   .aiw-phead { display:flex; align-items:center; padding:20px 20px 20px 26px; }
@@ -677,7 +679,7 @@
     <div class="ai-hero-in">
       <div class="hero-copy">
       <span class="ai-pill" data-anim><span class="live"></span> New in Dokan <span class="mono">5.0</span> &#183; AI Assistant</span>
-      <h1 data-anim>Run your marketplace<br />by <span class="grad">asking</span> it.</h1>
+      <h1>Run your marketplace<br />by <span class="grad">asking</span> it.</h1>
       <p class="lede" data-anim>Connect Claude, Cursor, or VS Code to your Dokan store and ask in plain language. No dashboards to dig through, no reports to build. Every vendor&rsquo;s assistant sees only their own data, automatically.</p>
       <div class="ai-cta" data-anim>
         <a href="#start" class="ai-b1">Turn it on
@@ -692,6 +694,7 @@
       </div>
 
       <div class="ai-term-crop">
+        <div class="ai-tilt">
         <div class="aiw" data-anim role="img"
              aria-label="The Dokan AI assistant answering &ldquo;Top vendors by sales last month?&rdquo; with a ranked list: Riverside Ceramics $8,420, North Lane Goods $6,180, Maple &amp; Co. $5,050">
           <div class="aiw-bar">
@@ -723,6 +726,7 @@
             </div>
             <p class="aiw-disc">Claude is AI and can make mistakes. Please double-check responses.</p>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -1227,6 +1231,60 @@ window.DOKAN_DEMOS = [
       clearProps:'transform',
       scrollTrigger:{ trigger:el, start:'top 88%', once:true } });
   });
+  /* ══ Hero heading: character reveal, replayed on every tab return ══
+     The heading rebuilds character by character, left to right, the second
+     line trailing the first — on first load, and again every time the tab
+     becomes visible after being hidden. Heading only; nothing else replays. */
+  (function () {
+    var h1 = document.querySelector('.ai-hero h1');
+    if (!h1 || !window.gsap) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    /* split into lines / words / characters; spaces stay plain text nodes so
+       wrapping is untouched, and .grad rides along on its word wrappers */
+    var lines = [[]];
+    function addText(text, extraClass) {
+      text.split(/(\s+)/).forEach(function (tok) {
+        if (!tok) return;
+        if (/^\s+$/.test(tok)) { h1.appendChild(document.createTextNode(tok)); return; }
+        var w = document.createElement('span');
+        w.className = 'hw' + (extraClass ? ' ' + extraClass : '');
+        tok.split('').forEach(function (ch) {
+          var c = document.createElement('span');
+          c.className = 'hc'; c.textContent = ch;
+          w.appendChild(c);
+          lines[lines.length - 1].push(c);
+        });
+        h1.appendChild(w);
+      });
+    }
+    var src = [].slice.call(h1.childNodes);
+    h1.textContent = '';
+    src.forEach(function (n) {
+      if (n.nodeType === 3) addText(n.nodeValue, '');
+      else if (n.tagName === 'BR') { h1.appendChild(document.createElement('br')); lines.push([]); }
+      else addText(n.textContent, n.className || '');
+    });
+    lines = lines.filter(function (l) { return l.length; });
+
+    var tlh = null;
+    function play(delay) {
+      if (tlh) tlh.kill();
+      var all = [].concat.apply([], lines);
+      gsap.set(all, { opacity: 0 });
+      tlh = gsap.timeline({ delay: delay || 0 });
+      lines.forEach(function (lineChars, li) {
+        tlh.to(lineChars, { opacity: 1, duration: .45, ease: 'power2.out',
+                            stagger: .032 }, li * .22);
+      });
+    }
+    play(.15);                                        /* initial load */
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') play(0);
+    });
+    window.addEventListener('pageshow', function (e) { if (e.persisted) play(0); });
+  })();
+
   /* ══ Header window: looping conversation ══
      Opens as a centred chat box with the Claude mark large above it. Typing
      finishes, Enter is pressed, then the composer glides down while the mark
@@ -1253,6 +1311,11 @@ window.DOKAN_DEMOS = [
     var M = {};                 /* measured geometry */
 
     function measure() {
+      /* flatten the scroll tilt while measuring — rects are projected boxes,
+         so a tilted ancestor would corrupt every value below */
+      var tiltEl = w.closest('.ai-tilt'),
+          tiltTf = tiltEl ? tiltEl.style.transform : '';
+      if (tiltEl) tiltEl.style.transform = 'none';
       panel.style.minHeight = '';
       gsap.set([comp, disc, mark], { clearProps: 'transform' });
       gsap.set(comp, { clearProps: 'width' });
@@ -1274,6 +1337,7 @@ window.DOKAN_DEMOS = [
       M.markY    = (M.stackDy + (cR.top - bR.top)) - 34 - mS.height - (mS.top - bR.top);
       gsap.set(mark, { clearProps: 'transform' });
       panel.style.minHeight = M.panelH + 'px';   /* stop the layout shifting */
+      if (tiltEl) tiltEl.style.transform = tiltTf;
     }
 
     function intro() {                            /* centred chat box state */
@@ -1425,6 +1489,16 @@ window.DOKAN_DEMOS = [
              scrub:.6, invalidateOnRefresh:true } })
           .to(copy, { y:-150, autoAlpha:0, ease:'none' }, 0)
           .to(win,  { y:-70, scale:.95, ease:'none' }, 0);
+
+        /* the window lies back — top edge receding, so the top corners read
+           narrower — then rises and straightens flat as it scrolls into view.
+           It lives on its own wrapper (.ai-tilt) so it stacks cleanly with the
+           exit parallax on the crop and the conversation loop inside. */
+        tl({ scrollTrigger:{ trigger:win, start:'clamp(top 90%)', end:'clamp(top 28%)',
+             scrub:.8, invalidateOnRefresh:true } })
+          .fromTo('.ai-tilt',
+                  { rotationX:18, y:70, transformPerspective:1100, transformOrigin:'50% 100%' },
+                  { rotationX:0, y:0, ease:'power2.out', duration:1 }, 0);
       }
 
       /* ── REQUIREMENTS — label and boxes converge from opposite edges ── */
@@ -1474,30 +1548,50 @@ window.DOKAN_DEMOS = [
                   { y:0, autoAlpha:1, ease:'none', stagger:.06 }, 0);
       }
 
-      /* ── FINAL CTA — reveal on entry, no pin.
-         Pinning this one left ~157px of empty page above and below it (the band
-         is 686px in a 1000px viewport) for the whole pin duration, so the band
-         now simply animates in as it arrives and the page stays continuous. ── */
+      /* ── FINAL CTA — scrubbed convergence in the style of the reference:
+         the copy never animates; the artwork behaves like the reference's
+         photo tiles — it enters dispersed toward the card's centre (lower,
+         smaller, transparent) and converges up-right into its resting spot as
+         the band scrolls in, trailing the scroll slightly. The four wave
+         lines converge the same way at staggered speeds, the last one landing
+         after the art. Scrub means it reverses and replays with the scroll. ── */
       var ctaSec = document.querySelector('.cta-band') &&
                    document.querySelector('.cta-band').closest('section');
       if (ctaSec) {
-        tl({ scrollTrigger:{ trigger:ctaSec, start:'top 88%', end:'top 30%',
-             scrub:.6, invalidateOnRefresh:true } })
-          .fromTo('.cta-copy > *', { y:44, autoAlpha:0 },
-                  { y:0, autoAlpha:1, ease:'none', stagger:.1 }, 0)
-          .fromTo('.cta-art', { y:90, autoAlpha:0 },
-                  { y:0, autoAlpha:1, ease:'none' }, .1);
+        var wavePaths = gsap.utils.toArray('.cta-band .waves path');
+        tl({ scrollTrigger:{ trigger:ctaSec, start:'top 85%', end:'top 28%',
+             scrub:.7, invalidateOnRefresh:true,
+             /* at rest, hand the button's transform back to its CSS hover */
+             onLeave: function () { gsap.set('.cta-btn', { clearProps:'transform' }); } } })
+          /* the whole card rises, grows and fades in over the page — as the
+             reference card does over the pinned video section behind it */
+          .fromTo('.cta-band',
+                  { y:70, scale:.94, autoAlpha:0, transformOrigin:'center center' },
+                  { y:0, scale:1, autoAlpha:1, ease:'power2.out', duration:.9 }, 0)
+          .fromTo(wavePaths, { y:120, autoAlpha:0 },
+                  { y:0, autoAlpha:1, ease:'power2.out', duration:.9, stagger:.14 }, 0)
+          /* the pieces inside converge with the same staggered, trailing feel */
+          .fromTo('.cta-copy h2', { y:44, autoAlpha:0 },
+                  { y:0, autoAlpha:1, ease:'power2.out', duration:.7 }, .10)
+          .fromTo('.cta-copy p',  { y:48, autoAlpha:0 },
+                  { y:0, autoAlpha:1, ease:'power2.out', duration:.7 }, .18)
+          .fromTo('.cta-btn',     { y:52, autoAlpha:0 },
+                  { y:0, autoAlpha:1, ease:'power2.out', duration:.7 }, .26)
+          .fromTo('.cta-art',
+                  { x:-84, y:110, scale:.8, autoAlpha:0, transformOrigin:'center bottom' },
+                  { x:0, y:0, scale:1, autoAlpha:1, ease:'power2.out', duration:1 }, .12);
         tl({ scrollTrigger:{ trigger:ctaSec, start:'top bottom', end:'bottom top',
-             scrub:.8, invalidateOnRefresh:true } })
-          .fromTo('.cta-band .waves', { yPercent:6 }, { yPercent:-6, ease:'none' }, 0);
+             scrub:.9, invalidateOnRefresh:true } })
+          .fromTo('.cta-band .waves', { yPercent:6 }, { yPercent:-6, ease:'none' }, 0)
+          .fromTo('.cta-art', { yPercent:0 }, { yPercent:-2.5, ease:'none' }, 0);
       }
 
       /* leave nothing stranded when the breakpoint changes */
       return function () {
         made.forEach(function (t) { if (t.scrollTrigger) t.scrollTrigger.kill(); t.kill(); });
-        gsap.set(['.hero-copy', '.ai-term-crop', '.ai-reqs-row > *', '.ai-reqs', '.sp-grid',
+        gsap.set(['.hero-copy', '.ai-term-crop', '.ai-tilt', '.ai-reqs-row > *', '.ai-reqs', '.sp-grid',
                   '.cap', '.ai-card', '.ai-chip', '.ai-client',
-                  '.cta-copy > *', '.cta-art', '.cta-band .waves'],
+                  '.cta-band', '.cta-copy > *', '.cta-art', '.cta-band .waves', '.cta-band .waves path'],
                  { clearProps:'all' });
       };
     });
